@@ -1,0 +1,42 @@
+name: Build and Deploy to AKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Login to ACR
+      run: |
+        az acr login --name ${{ secrets.ACR_NAME }}
+
+    - name: Build and Push API image
+      run: |
+        docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/news-rag-api:latest .
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/news-rag-api:latest
+
+    - name: Build and Push Pipeline image
+      run: |
+        docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/news-rag-pipeline:latest -f Dockerfile.pipeline .
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/news-rag-pipeline:latest
+
+    - name: Set AKS context
+      run: |
+        az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER }} --overwrite-existing
+
+    - name: Deploy to AKS
+      run: |
+        kubectl apply -f deployment.yaml
+        kubectl apply -f cronjob.yaml
