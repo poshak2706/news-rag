@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
+from fastapi.responses import HTMLResponse
 from embeddings.vector_store import VectorStore
 from embeddings.azure_retriever import search_azure as search
 from rag.generator import generate_answer
@@ -53,3 +53,33 @@ def query_news(request: QueryRequest):
         "answer": answer,
         "sources": sources
     }
+
+
+@app.get("/", response_class=HTMLResponse)
+def ui():
+    return """
+    <html>
+    <head>
+        <title>News RAG</title>
+    </head>
+    <body>
+        <h2>News RAG Chat</h2>
+        <input id="query" placeholder="Ask something..." size="50"/>
+        <button onclick="sendQuery()">Ask</button>
+        <pre id="response"></pre>
+
+        <script>
+        async function sendQuery() {
+            const q = document.getElementById("query").value;
+            const res = await fetch("/query", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({query: q})
+            });
+            const data = await res.json();
+            document.getElementById("response").innerText = data.answer;
+        }
+        </script>
+    </body>
+    </html>
+    """
