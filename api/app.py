@@ -18,10 +18,6 @@ class QueryRequest(BaseModel):
     query: str
 
 
-# Health check
-@app.get("/")
-def root():
-    return {"message": "News RAG API is running"}
 
 
 # Main endpoint
