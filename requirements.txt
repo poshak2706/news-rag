@@ -5,6 +5,7 @@ trafilatura
 python-dotenv
 google-genai
 lxml
+faiss-cpu
 fastapi
 uvicorn
 lxml_html_clean
