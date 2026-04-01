@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-rag
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: news-rag
+  template:
+    metadata:
+      labels:
+        app: news-rag
+    spec:
+      containers:
+      - name: news-rag
+        image: newsragacr123.azurecr.io/news-rag-api:latest
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 8000
+
+        env:
+        - name: GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: news-rag-secret
+              key: GOOGLE_API_KEY
+
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 10
