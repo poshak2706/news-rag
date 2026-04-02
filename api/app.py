@@ -8,11 +8,6 @@ from rag.generator import generate_answer
 
 app = FastAPI(title="News RAG API")
 
-# Load vector store once at startup
-store = VectorStore
-store.load()
-
-
 # Request schema
 class QueryRequest(BaseModel):
     query: str
