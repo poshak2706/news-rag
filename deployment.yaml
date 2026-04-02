@@ -26,6 +26,16 @@ spec:
             secretKeyRef:
               name: news-rag-secret
               key: GOOGLE_API_KEY
+        - name: AZURE_SEARCH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: news-rag-secret
+              key: AZURE_SEARCH_KEY
+        - name: AZURE_SEARCH_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: news-rag-secret
+              key: AZURE_SEARCH_ENDPOINT
 
         resources:
           requests:

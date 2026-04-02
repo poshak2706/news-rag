@@ -9,3 +9,4 @@ data/
 *.json
 .env
 node_modules/
+vector_store.py
