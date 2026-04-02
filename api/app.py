@@ -9,7 +9,7 @@ from rag.generator import generate_answer
 app = FastAPI(title="News RAG API")
 
 # Load vector store once at startup
-store = VectorStore(dim=768)
+store = VectorStore
 store.load()
 
 
@@ -17,7 +17,34 @@ store.load()
 class QueryRequest(BaseModel):
     query: str
 
+@app.get("/", response_class=HTMLResponse)
+def ui():
+    return """
+    <html>
+    <head>
+        <title>News RAG</title>
+    </head>
+    <body>
+        <h2>News RAG Chat</h2>
+        <input id="query" placeholder="Ask something..." size="50"/>
+        <button onclick="sendQuery()">Ask</button>
+        <pre id="response"></pre>
 
+        <script>
+        async function sendQuery() {
+            const q = document.getElementById("query").value;
+            const res = await fetch("/query", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({query: q})
+            });
+            const data = await res.json();
+            document.getElementById("response").innerText = data.answer;
+        }
+        </script>
+    </body>
+    </html>
+    """
 
 
 # Main endpoint
@@ -51,31 +78,3 @@ def query_news(request: QueryRequest):
     }
 
 
-@app.get("/", response_class=HTMLResponse)
-def ui():
-    return """
-    <html>
-    <head>
-        <title>News RAG</title>
-    </head>
-    <body>
-        <h2>News RAG Chat</h2>
-        <input id="query" placeholder="Ask something..." size="50"/>
-        <button onclick="sendQuery()">Ask</button>
-        <pre id="response"></pre>
-
-        <script>
-        async function sendQuery() {
-            const q = document.getElementById("query").value;
-            const res = await fetch("/query", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({query: q})
-            });
-            const data = await res.json();
-            document.getElementById("response").innerText = data.answer;
-        }
-        </script>
-    </body>
-    </html>
-    """
