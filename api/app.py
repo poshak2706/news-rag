@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 from embeddings.vector_store import VectorStore
 from embeddings.azure_retriever import search_azure as search
 from rag.generator import generate_answer
+import subprocess
 
 
 app = FastAPI(title="News RAG API")
@@ -36,6 +37,18 @@ def ui():
             const data = await res.json();
             document.getElementById("response").innerText = data.answer;
         }
+        </script>
+        <h3>Pipeline Logs</h3>
+        <pre id="logs"></pre>
+
+        <script>
+        async function fetchLogs() {
+            const res = await fetch("/logs");
+            const data = await res.json();
+            document.getElementById("logs").innerText = data.logs;
+        }
+
+        setInterval(fetchLogs, 5000);
         </script>
     </body>
     </html>
@@ -72,4 +85,19 @@ def query_news(request: QueryRequest):
         "sources": sources
     }
 
+
+@app.get("/logs")
+
+def log(msg):
+    print(msg)  # already goes to kubectl logs
+
+def get_logs():
+    try:
+        logs = subprocess.check_output(
+            ["kubectl", "logs", "--tail=20", "-l", "job-name=news-rag-pipeline"],
+            stderr=subprocess.STDOUT
+        )
+        return {"logs": logs.decode()}
+    except Exception as e:
+        return {"logs": str(e)}
 
