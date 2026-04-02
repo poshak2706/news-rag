@@ -15,7 +15,7 @@ client = SearchClient(endpoint, index_name, AzureKeyCredential(key))
 
 
 def search_azure(query, k=10):
-    vector = get_embeddings([query])[0].tolist()
+    vector = get_embeddings([query])[0]
 
     vector_query = VectorizedQuery(
         vector=vector,
