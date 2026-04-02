@@ -49,7 +49,7 @@ def main():
     store.add(embeddings, metadata)
     store.save()
 
-    print("FAISS index created.")
+    print("Index created.")
 
 
 if __name__ == "__main__":

@@ -1,22 +1,23 @@
-import faiss
-import numpy as np
-import json
+from embeddings.azure_retriever import search_azure
+
 
 class VectorStore:
-    def __init__(self, dim):
-        self.index = faiss.IndexFlatL2(dim)
-        self.metadata = []
-
-    def add(self, embeddings, metadata):
-        self.index.add(np.array(embeddings).astype("float32"))
-        self.metadata.extend(metadata)
-
-    def save(self):
-        faiss.write_index(self.index, "data/faiss.index")
-        with open("data/metadata.json", "w") as f:
-            json.dump(self.metadata, f)
+    def __init__(self):
+        pass
 
     def load(self):
-        self.index = faiss.read_index("data/faiss.index")
-        with open("data/metadata.json") as f:
-            self.metadata = json.load(f)
+        # No local index to load anymore
+        # Azure Search handles everything
+        print("Using Azure Search as vector store")
+
+    def add(self, embeddings, metadata):
+        # Not needed because ingestion pipeline directly uploads to Azure Search
+        pass
+
+    def save(self):
+        # No local persistence needed
+        pass
+
+    def query(self, query):
+        results = search_azure(query)
+        return results

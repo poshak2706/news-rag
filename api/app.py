@@ -29,7 +29,7 @@ def query_news(request: QueryRequest):
         return {"error": "Empty query"}
 
     # Retrieval
-    results = search(query, store)
+    results = search(query)
 
     if not results:
         return {

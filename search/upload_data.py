@@ -1,12 +1,10 @@
-import json
+import os
 import uuid
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
 from embeddings.embedder import get_embeddings
-import os
-from dotenv import load_dotenv
+from ingestion.scraper import fetch_rss, scrape_article
 
-load_dotenv()
 
 endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
 key = os.getenv("AZURE_SEARCH_KEY")
@@ -14,24 +12,38 @@ index_name = "news-index"
 
 client = SearchClient(endpoint, index_name, AzureKeyCredential(key))
 
-# Load your FAISS metadata (reuse existing data)
-with open("data/metadata.json") as f:
-    data = json.load(f)
 
-documents = []
+def run_upload():
+    articles = fetch_rss()
+    articles = articles[:2]  # limit for demo
 
-for item in data:
-    embedding = get_embeddings([item["content"]])[0]
+    documents = []
 
-    documents.append({
-        "id": str(uuid.uuid4()),
-        "title": item["title"],
-        "content": item["content"],
-        "published": item.get("published", ""),
-        "contentVector": embedding.tolist()
-    })
+    for a in articles:
+        content = scrape_article(a["link"])
 
-# Upload
-client.upload_documents(documents)
+        if isinstance(content, dict):
+            content = content.get("text", "")
 
-print(f"Uploaded {len(documents)} documents")
+        if not content:
+            continue
+
+        embedding = get_embeddings([content])[0]
+
+        documents.append({
+            "id": str(uuid.uuid4()),
+            "title": a["title"],
+            "content": content,
+            "published": a.get("published", ""),
+            "contentVector": embedding
+        })
+
+    if documents:
+        client.upload_documents(documents)
+        print(f"Uploaded {len(documents)} articles")
+    else:
+        print("No documents to upload")
+
+
+if __name__ == "__main__":
+    run_upload()
