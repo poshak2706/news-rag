@@ -14,9 +14,9 @@ spec:
           - name: pipeline
             image: newsragacr123.azurecr.io/news-rag-pipeline:latest
             imagePullPolicy: Always
-          volumeMounts:
-          - name: logs-volume
-            mountPath: /app/logs
+            volumeMounts:
+            - name: logs-volume
+              mountPath: /app/logs
 
             env:
             - name: GOOGLE_API_KEY
