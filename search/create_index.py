@@ -22,16 +22,11 @@ index_name = "news-index"
 
 client = SearchIndexClient(endpoint, AzureKeyCredential(key))
 
-# Define index schema
 fields = [
     SimpleField(name="id", type="Edm.String", key=True),
-
     SearchableField(name="title", type="Edm.String"),
     SearchableField(name="content", type="Edm.String"),
-
     SimpleField(name="published", type="Edm.String"),
-
-    # Vector field
     SearchField(
         name="contentVector",
         type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
@@ -39,8 +34,6 @@ fields = [
         vector_search_profile_name="vector-profile"
     )
 ]
-
-# Vector config
 vector_search = VectorSearch(
     algorithms=[
         HnswAlgorithmConfiguration(name="hnsw")
@@ -52,7 +45,6 @@ vector_search = VectorSearch(
         )
     ]
 )
-
 index = SearchIndex(
     name=index_name,
     fields=fields,
