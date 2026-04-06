@@ -19,13 +19,13 @@ spec:
             - name: GOOGLE_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: news-rag-secret
+                  name: azure-search-secret
                   key: GOOGLE_API_KEY
 
             - name: AZURE_SEARCH_KEY
               valueFrom:
                 secretKeyRef:
-                  name: news-rag-secret
+                  name: azure-search-secret
                   key: AZURE_SEARCH_KEY
 
             - name: AZURE_SEARCH_ENDPOINT
