@@ -21,6 +21,7 @@ def generate_id(text):
 
 def log(msg):
     print(msg)
+
     with open("/app/logs/logs.txt", "a") as f:
         f.write(msg + "\n")
 

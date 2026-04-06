@@ -86,16 +86,10 @@ def query_news(request: QueryRequest):
     }
 
 @app.get("/logs")
-def log(msg):
-    print(msg)  # still prints to kubectl logs
-
-    with open("logs.txt", "a") as f:
-        f.write(msg + "\n")
-
-
 def get_logs():
     try:
         with open("/app/logs/logs.txt", "r") as f:
-            return {"logs": f.read()}
+            logs = f.read()
+        return {"logs": logs}
     except:
         return {"logs": "No logs yet"}
