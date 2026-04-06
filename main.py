@@ -9,7 +9,11 @@ from embeddings.vector_store import VectorStore
 import time
 
 
+def log(msg):
+    print(msg)
 
+    with open("/app/logs/logs.txt", "a") as f:
+        f.write(msg + "\n")
 def main():
     rss_articles = fetch_rss()
 
@@ -23,11 +27,11 @@ def main():
             article.update(content)
             full_articles.append(article)
 
-    print(f"Saved {len(full_articles)} articles.")
+    log(f"Saved {len(full_articles)} articles.")
 
     processed_articles = process_articles(full_articles)
 
-    print(f"Saved {len(processed_articles)} processed articles.")
+    log(f"Saved {len(processed_articles)} processed articles.")
 
     all_chunks = []
     metadata = []
@@ -49,7 +53,7 @@ def main():
     store.add(embeddings, metadata)
     store.save()
 
-    print("Index created.")
+    log("Index created.")
 
 
 if __name__ == "__main__":

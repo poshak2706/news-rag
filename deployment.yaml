@@ -19,12 +19,15 @@ spec:
 
         ports:
         - containerPort: 8000
+        volumeMounts:
+        - name: logs-volume
+          mountPath: /app/logs
 
         env:
         - name: GOOGLE_API_KEY
           valueFrom:
             secretKeyRef:
-              name: azure-search-secret
+              name: news-rag-secret
               key: GOOGLE_API_KEY
         - name: AZURE_SEARCH_KEY
           valueFrom:
@@ -58,3 +61,7 @@ spec:
             port: 8000
           initialDelaySeconds: 20
           periodSeconds: 10
+      volumes:
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: logs-pvc

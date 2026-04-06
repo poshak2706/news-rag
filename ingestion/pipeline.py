@@ -19,6 +19,11 @@ client = SearchClient(endpoint, "news-index", AzureKeyCredential(key))
 def generate_id(text):
     return hashlib.md5(text.encode()).hexdigest()
 
+def log(msg):
+    print(msg)
+    with open("/app/logs/logs.txt", "a") as f:
+        f.write(msg + "\n")
+
 
 def run_pipeline():
     articles = fetch_rss()
@@ -55,7 +60,7 @@ def run_pipeline():
     if documents:
         client.merge_or_upload_documents(documents)
 
-    print(f"Uploaded {len(documents)} articles")
+    log(f"Uploaded {len(documents)} articles")
 
 
 if __name__ == "__main__":

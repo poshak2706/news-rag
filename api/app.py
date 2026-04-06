@@ -85,19 +85,17 @@ def query_news(request: QueryRequest):
         "sources": sources
     }
 
-
 @app.get("/logs")
-
 def log(msg):
-    print(msg)  # already goes to kubectl logs
+    print(msg)  # still prints to kubectl logs
+
+    with open("logs.txt", "a") as f:
+        f.write(msg + "\n")
+
 
 def get_logs():
     try:
-        logs = subprocess.check_output(
-            ["kubectl", "logs", "--tail=20", "-l", "job-name=news-rag-pipeline"],
-            stderr=subprocess.STDOUT
-        )
-        return {"logs": logs.decode()}
-    except Exception as e:
-        return {"logs": str(e)}
-
+        with open("/app/logs/logs.txt", "r") as f:
+            return {"logs": f.read()}
+    except:
+        return {"logs": "No logs yet"}
