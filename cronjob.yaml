@@ -20,7 +20,7 @@ spec:
 
             env:
             - name: GOOGLE_API_KEY
-              valueFrom:
+              value:
                 secretKeyRef:
                   name: news-rag-secret
                   key: GOOGLE_API_KEY
