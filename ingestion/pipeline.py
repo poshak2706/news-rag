@@ -29,7 +29,9 @@ def log(msg):
 
 def run_pipeline():
     articles = fetch_rss()
-    articles = articles[:2]
+    log("Fetching RSS Feed")
+    articles = articles[:20]
+    log(f"Retrieved {len(articles)} Articles")
 
     contents = []
     valid_articles = []

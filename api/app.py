@@ -4,9 +4,14 @@ from fastapi.responses import HTMLResponse
 from embeddings.vector_store import VectorStore
 from embeddings.azure_retriever import search_azure as search
 from rag.generator import generate_answer
-import subprocess
+import os
 
+def log(msg):
+    print(msg)
+    os.makedirs("/app/logs", exist_ok=True)
 
+    with open("/app/logs/logs.txt", "a") as f:
+        f.write(msg + "\n")
 app = FastAPI(title="News RAG API")
 
 # Request schema
@@ -15,6 +20,7 @@ class QueryRequest(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def ui():
+    log("Retrieved Basic UI")
     return """
     <html>
     <head>
@@ -59,12 +65,15 @@ def ui():
 @app.post("/query")
 def query_news(request: QueryRequest):
     query = request.query.strip()
+    log("Query Recieved")
 
     if not query:
+        log("Empty Query")
         return {"error": "Empty query"}
 
     # Retrieval
     results = search(query)
+
 
     if not results:
         return {
@@ -78,6 +87,7 @@ def query_news(request: QueryRequest):
 
     # Return sources (important for frontend)
     sources = list(set([r["title"] for r in results]))
+    log("Generated Response")
 
     return {
         "query": query,
