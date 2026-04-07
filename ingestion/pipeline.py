@@ -7,6 +7,7 @@ from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -20,11 +21,13 @@ def generate_id(text):
     return hashlib.md5(text.encode()).hexdigest()
 
 def log(msg):
-    print(msg)
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    line=f"[{timestamp}] {msg}"
+    print(line)
     os.makedirs("/app/logs", exist_ok=True)
 
     with open("/app/logs/logs.txt", "a") as f:
-        f.write(msg + "\n")
+        f.write(line + "\n")
 
 
 def run_pipeline():

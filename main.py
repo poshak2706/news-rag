@@ -7,14 +7,16 @@ from embeddings.chunker import chunk_text
 from embeddings.embedder import get_embeddings
 from embeddings.vector_store import VectorStore
 import time
-
+from datetime import datetime
 
 def log(msg):
-    print(msg)
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    line=f"[{timestamp}] {msg}"
+    print(line)
     os.makedirs("/app/logs", exist_ok=True)
 
     with open("/app/logs/logs.txt", "a") as f:
-        f.write(msg + "\n")
+        f.write(line + "\n")
 def main():
     rss_articles = fetch_rss()
 

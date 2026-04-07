@@ -5,13 +5,16 @@ from embeddings.vector_store import VectorStore
 from embeddings.azure_retriever import search_azure as search
 from rag.generator import generate_answer
 import os
+from datetime import datetime
 
 def log(msg):
-    print(msg)
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    line=f"[{timestamp}] {msg}"
+    print(line)
     os.makedirs("/app/logs", exist_ok=True)
 
     with open("/app/logs/logs.txt", "a") as f:
-        f.write(msg + "\n")
+        f.write(line + "\n")
 app = FastAPI(title="News RAG API")
 
 # Request schema
@@ -20,7 +23,6 @@ class QueryRequest(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def ui():
-    
     return """
     <html>
     <head>
@@ -45,6 +47,10 @@ def ui():
         }
         </script>
         <h3>Pipeline Logs</h3>
+        <button onclick="clearlogs()">Clear Logs</button>
+        async function clearlogs() {
+            await fetch("/clear-logs, { method : POST });
+        }
         <pre id="logs"></pre>
 
         <script>
@@ -54,7 +60,7 @@ def ui():
             document.getElementById("logs").innerText = data.logs;
         }
 
-        setInterval(fetchLogs, 5000);
+        setInterval(fetchLogs, 1000);
         </script>
     </body>
     </html>
@@ -103,3 +109,11 @@ def get_logs():
         return {"logs": logs}
     except:
         return {"logs": "No logs yet"}
+    
+@app.post("/clear-logs")
+def clear_logs():
+    try:
+        open("/app/logs/logs.txt", "w").close()
+        return {"status": "logs cleared"}
+    except:
+        return {"status": "error"}
