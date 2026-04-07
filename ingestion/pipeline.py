@@ -29,9 +29,9 @@ def log(msg):
 
 def run_pipeline():
     articles = fetch_rss()
-    log("Fetching RSS Feed")
-    articles = articles[:20]
-    log(f"Retrieved {len(articles)} Articles")
+    log("Auto: Fetching RSS Feed")
+    articles = articles[:2]
+    log(f"Auto: Retrieved {len(articles)} Articles")
 
     contents = []
     valid_articles = []
@@ -64,7 +64,7 @@ def run_pipeline():
     if documents:
         client.merge_or_upload_documents(documents)
 
-    log(f"Uploaded {len(documents)} articles")
+    log(f"Auto: Uploaded {len(documents)} articles")
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ class QueryRequest(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def ui():
-    log("Retrieved Basic UI")
+    
     return """
     <html>
     <head>
