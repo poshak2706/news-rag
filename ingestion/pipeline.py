@@ -21,6 +21,7 @@ def generate_id(text):
 
 def log(msg):
     print(msg)
+    os.makedirs("/app/logs", exist_ok=True)
 
     with open("/app/logs/logs.txt", "a") as f:
         f.write(msg + "\n")

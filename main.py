@@ -2,7 +2,7 @@ import json
 from ingestion.rss_fetcher import fetch_rss
 from ingestion.scraper import scrape_article
 from processing.processor import process_articles
-
+import os
 from embeddings.chunker import chunk_text
 from embeddings.embedder import get_embeddings
 from embeddings.vector_store import VectorStore
@@ -11,6 +11,7 @@ import time
 
 def log(msg):
     print(msg)
+    os.makedirs("/app/logs", exist_ok=True)
 
     with open("/app/logs/logs.txt", "a") as f:
         f.write(msg + "\n")
