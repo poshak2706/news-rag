@@ -50,7 +50,8 @@ def ui():
         <button onclick="clearlogs()">Clear Logs</button>
         <script>
         async function clearlogs() {
-            await fetch("/clear-logs, { method : "POST" });
+            await fetch("/clear-logs", { method : "POST" });
+            fetchLogs();
         }
         </script>
         <pre id="logs"></pre>
