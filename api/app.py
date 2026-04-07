@@ -48,9 +48,11 @@ def ui():
         </script>
         <h3>Pipeline Logs</h3>
         <button onclick="clearlogs()">Clear Logs</button>
+        <script>
         async function clearlogs() {
-            await fetch("/clear-logs, { method : POST });
+            await fetch("/clear-logs, { method : "POST" });
         }
+        </script>
         <pre id="logs"></pre>
 
         <script>
