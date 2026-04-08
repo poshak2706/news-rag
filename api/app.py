@@ -94,7 +94,8 @@ def query_news(request: QueryRequest):
             return {
                 "query": query,
                 "answer": entry["answer"],
-                "sources": entry["sources"]
+                "sources": entry["sources"],
+                "cached":True
             }
         else:
             print("CACHE EXPIRED")
@@ -127,7 +128,8 @@ def query_news(request: QueryRequest):
     return {
         "query": query,
         "answer": answer,
-        "sources": sources
+        "sources": sources,
+        "cached": False
     }
 
 @app.get("/logs")
