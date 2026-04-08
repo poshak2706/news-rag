@@ -36,10 +36,7 @@ def ui():
         <h2>News RAG Chat</h2>
         <input id="query" placeholder="Ask something..." size="50"/>
         <button onclick="sendQuery()">Ask</button>
-        <h3>Response</h3>
         <pre id="response"></pre>
-        <h3>Sources</h3>
-        <ul id="sources"></ul>
 
         <script>
         async function sendQuery() {
@@ -50,24 +47,8 @@ def ui():
                 body: JSON.stringify({query: q})
             });
             const data = await res.json();
-            let responseText = data.answer;
-
-            // show cache indicator
-            if (data.cached) {
-                responseText = "[FROM CACHE]\n\n" + responseText;
-            }
-
-            document.getElementById("response").innerText = responseText;
-
-            // render sources
-            const sourcesList = document.getElementById("sources");
-            sourcesList.innerHTML = "";
-
-            data.sources.forEach(src => {
-                const li = document.createElement("li");
-                li.innerText = src;
-                sourcesList.appendChild(li);
-            });
+            document.getElementById("response").innerText = data.answer;
+            document.getElementById("sources").innerText = data.sources;
         }
         </script>
         <h3>Pipeline Logs</h3>
@@ -113,7 +94,6 @@ def query_news(request: QueryRequest):
             return {
                 "query": query,
                 "answer": entry["answer"],
-                "sources": entry["sources"],
                 "cached":True
             }
         else:
@@ -140,14 +120,12 @@ def query_news(request: QueryRequest):
 
     CACHE[query] = {
         "answer": answer,
-        "sources": sources,
         "timestamp": now
     }
 
     return {
         "query": query,
         "answer": answer,
-        "sources": sources,
         "cached": False
     }
 
