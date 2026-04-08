@@ -5,7 +5,11 @@ from embeddings.vector_store import VectorStore
 from embeddings.azure_retriever import search_azure as search
 from rag.generator import generate_answer
 import os
+import time
 from datetime import datetime
+
+CACHE = {}
+CACHE_TTL = 600
 
 def log(msg):
     timestamp = datetime.now().strftime("%H:%M:%S")
@@ -44,6 +48,7 @@ def ui():
             });
             const data = await res.json();
             document.getElementById("response").innerText = data.answer;
+            document.getElementById("sources").innerText = data.sources;
         }
         </script>
         <h3>Pipeline Logs</h3>
@@ -51,6 +56,7 @@ def ui():
         <script>
         async function clearlogs() {
             await fetch("/clear-logs", { method : "POST" });
+            get_logs();
         }
         </script>
         <pre id="logs"></pre>
@@ -69,19 +75,36 @@ def ui():
     """
 
 
-# Main endpoint
 @app.post("/query")
 def query_news(request: QueryRequest):
     query = request.query.strip()
     log("Query Recieved")
+    now = time.time()
+
 
     if not query:
         log("Empty Query")
         return {"error": "Empty query"}
+    if query in CACHE:
+        entry = CACHE[query]
 
-    # Retrieval
+        if now - entry["timestamp"] < CACHE_TTL:
+            print("CACHE HIT")
+            log("CACHE HIT")
+            return {
+                "query": query,
+                "answer": entry["answer"],
+                "sources": entry["sources"]
+            }
+        else:
+            print("CACHE EXPIRED")
+            log("CACHE EXPIRED")
+            del CACHE[query]
+
+    print("CACHE MISS")
+    log("CACHE MISS")
+
     results = search(query)
-
 
     if not results:
         return {
@@ -90,12 +113,16 @@ def query_news(request: QueryRequest):
             "sources": []
         }
 
-    # Generation
     answer = generate_answer(query, results)
 
-    # Return sources (important for frontend)
     sources = list(set([r["title"] for r in results]))
     log("Generated Response")
+
+    CACHE[query] = {
+        "answer": answer,
+        "sources": sources,
+        "timestamp": now
+    }
 
     return {
         "query": query,
