@@ -28,6 +28,7 @@ class QueryRequest(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 def ui():
     return """
+    <!DOCTYPE html>
     <html>
     <head>
         <title>News RAG</title>
