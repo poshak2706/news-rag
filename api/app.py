@@ -54,7 +54,7 @@ def ui():
             let responseText = data.answer || "No answer";
 
             if (data.cached) {
-                responseText = "[Cached]\n\n" + responseText;
+                responseText = "[Cached]" + responseText;
             }
 
             document.getElementById("response").innerText = responseText;
