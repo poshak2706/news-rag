@@ -144,7 +144,8 @@ def query_news(request: QueryRequest):
     sources = []
     for r in results:
         sources.append({"title": r.get("title", "No title"),
-                        "published": r.get("published", "No date")})
+                        "published": r.get("published", "No date"),
+                        "link": r.get("link", "")})
     log("Generated Response")
 
     CACHE[query] = {
