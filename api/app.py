@@ -65,7 +65,7 @@ def ui():
             if (data.sources && Array.isArray(data.sources)) {
                 data.sources.forEach(src => {
                     const li = document.createElement("li");
-                    li.innerHTML = `<b>${src.title}</b><br><small>${src.published})</small>`; 
+                    li.innerHTML = `<a href="${src.link}" target="_blank"><b>${src.title}</b></a><br><small>${src.published})</small>`; 
                     sourcesList.appendChild(li);
                 });
             } else {

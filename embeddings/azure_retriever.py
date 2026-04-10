@@ -42,7 +42,9 @@ def search_azure(query, k=10):
         output.append({
             "title": title,
             "content": r["content"],
-            "published": r.get("published", "")
+            "published": r.get("published", ""),
+            "link": r.get("link", "")
+
         })
 
         # limit final unique results
