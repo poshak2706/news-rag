@@ -61,6 +61,7 @@ def run_pipeline():
             "title": a["title"],
             "content": content,
             "published": a.get("published", ""),
+            "link": a.get("link", ""),
             "contentVector": embedding
         })
 
