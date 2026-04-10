@@ -37,7 +37,8 @@ def ui():
         <input id="query" placeholder="Ask something..." size="50"/>
         <button onclick="sendQuery()">Ask</button>
         <pre id="response"></pre>
-
+        <h3> Sources </h3>
+        <ul id = "sources"></ul>
         <script>
         async function sendQuery() {
             const q = document.getElementById("query").value;
@@ -46,10 +47,33 @@ def ui():
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({query: q})
             });
+
             const data = await res.json();
-            document.getElementById("response").innerText = data.answer;
-            document.getElementById("sources").innerText = data.sources;
+
+            let responseText = data.answer || "No answer";
+
+            if (data.cached) {
+                responseText = "[Cached]\n\n" + responseText;
+            }
+
+            document.getElementById("response").innerText = responseText;
+
+            const sourcesList = document.getElementById("sources");
+            sourcesList.innerHTML = "";
+
+            if (data.sources && Array.isArray(data.sources)) {
+                data.sources.forEach(src => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<b>${src.title}</b><br><small>${src.published})</small>`; 
+                    sourcesList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement("li");
+                li.innerText = "No sources available";
+                sourcesList.appendChild(li);
         }
+}
+        
         </script>
         <h3>Pipeline Logs</h3>
         <button onclick="clearlogs()">Clear Logs</button>
@@ -94,6 +118,7 @@ def query_news(request: QueryRequest):
             return {
                 "query": query,
                 "answer": entry["answer"],
+                "sources": entry["sources"],
                 "cached":True
             }
         else:
@@ -115,17 +140,22 @@ def query_news(request: QueryRequest):
 
     answer = generate_answer(query, results)
 
-    sources = list(set([r["title"] for r in results]))
+    sources = []
+    for r in results:
+        sources.append({"title": r.get("title", "No title"),
+                        "published": r.get("published", "No date")})
     log("Generated Response")
 
     CACHE[query] = {
         "answer": answer,
+        "sources":sources,
         "timestamp": now
     }
 
     return {
         "query": query,
         "answer": answer,
+        "sources":sources,
         "cached": False
     }
 
